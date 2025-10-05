@@ -22,7 +22,8 @@ function App() {
     eventCount,
     isPaused,
     clearEvents,
-    togglePause
+    togglePause,
+    disconnect
   } = useWebSocket(filterKey);
 
   const testConnectionDirect = useCallback(async () => {
@@ -168,12 +169,15 @@ function App() {
   }, [currentFilter, filterKey, createFilter]);
 
   const handleClearFilter = useCallback(() => {
+    // Clear the filter key first - this will trigger useWebSocket to disconnect
     setFilterKey('');
     setCurrentFilter({
       repository: '',
       pathPrefix: '',
       keyword: ''
     });
+    
+    // Clear events explicitly
     clearEvents();
   }, [clearEvents]);
 
@@ -211,6 +215,7 @@ function App() {
             onClearEvents={clearEvents}
             onTogglePause={togglePause}
             connectionStatus={connectionStatus}
+            filterKeyword={currentFilter.keyword}
           />
         </div>
       </div>

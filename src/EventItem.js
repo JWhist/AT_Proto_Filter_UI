@@ -2,8 +2,37 @@ import React, { useState } from 'react';
 import { useRecordContent } from './useRecordContent';
 import { parsePathInfo } from './atproto-utils';
 
-const EventItem = ({ event, index }) => {
+const EventItem = ({ event, index, filterKeyword }) => {
   const [isExpanded, setIsExpanded] = useState(false);
+
+  // Function to highlight keywords in text
+  const highlightKeywords = (text, keywords) => {
+    if (!keywords || !text) return text;
+    
+    // Split keywords by comma and trim whitespace
+    const keywordList = keywords.split(',').map(k => k.trim()).filter(k => k.length > 0);
+    
+    if (keywordList.length === 0) return text;
+    
+    // Create a regex pattern that matches any of the keywords (case insensitive)
+    const pattern = new RegExp(`(${keywordList.map(k => k.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|')})`, 'gi');
+    
+    // Split text by the pattern while keeping the matched parts
+    const parts = text.split(pattern);
+    
+    return parts.map((part, i) => {
+      // Check if this part matches any keyword (case insensitive)
+      const isKeyword = keywordList.some(keyword => 
+        part.toLowerCase() === keyword.toLowerCase()
+      );
+      
+      return isKeyword ? (
+        <span key={i} style={{ backgroundColor: '#fef08a', padding: '1px 2px', borderRadius: '2px' }}>
+          {part}
+        </span>
+      ) : part;
+    });
+  };
 
   const formatTimestamp = (timestamp) => {
     return new Date(timestamp).toLocaleTimeString('en-US', {
@@ -48,7 +77,7 @@ const EventItem = ({ event, index }) => {
         // Post record
         return (
           <div className="record-content">
-            <div className="record-text">"{record.text}"</div>
+            <div className="record-text">"{highlightKeywords(record.text, filterKeyword)}"</div>
             {record.langs && (
               <div className="record-meta">
                 Languages: {record.langs.join(', ')}
@@ -126,6 +155,9 @@ const EventItem = ({ event, index }) => {
     previewText = `${action} operation`;
   }
 
+  // Highlight keywords in preview text
+  const highlightedPreview = highlightKeywords(previewText, filterKeyword);
+
   return (
     <div className="event-item">
       <div className="event-header" onClick={() => setIsExpanded(!isExpanded)}>
@@ -146,7 +178,7 @@ const EventItem = ({ event, index }) => {
           </span>
           
           <span className="event-preview">
-            {previewText}
+            {highlightedPreview}
           </span>
         </div>
 

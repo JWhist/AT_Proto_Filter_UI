@@ -16,6 +16,7 @@ import useWebSocket from './useWebSocket';
 describe('App', () => {
   const mockClearEvents = jest.fn();
   const mockTogglePause = jest.fn();
+  const mockDisconnect = jest.fn();
   
   const mockUseWebSocket = {
     connectionStatus: 'disconnected',
@@ -23,7 +24,8 @@ describe('App', () => {
     eventCount: 0,
     isPaused: false,
     clearEvents: mockClearEvents,
-    togglePause: mockTogglePause
+    togglePause: mockTogglePause,
+    disconnect: mockDisconnect
   };
 
   beforeEach(() => {
@@ -31,6 +33,7 @@ describe('App', () => {
     fetch.mockClear();
     mockClearEvents.mockClear();
     mockTogglePause.mockClear();
+    mockDisconnect.mockClear();
   });
 
   afterEach(() => {

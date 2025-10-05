@@ -32,9 +32,13 @@ const useWebSocket = (filterKey) => {
   }, [isPaused]);
 
   useEffect(() => {
+    // Reset reconnection attempts when filterKey changes
+    reconnectAttempts.current = 0;
+    
     if (!filterKey) {
       if (socket.current) {
-        socket.current.close();
+        console.log('🔌 Disconnecting due to empty filterKey');
+        socket.current.close(1000, 'Filter cleared');
         socket.current = null;
       }
       setConnectionStatus('disconnected');
@@ -44,6 +48,12 @@ const useWebSocket = (filterKey) => {
     setConnectionStatus('connecting');
 
     const connect = () => {
+      // Double-check that we still have a filterKey before connecting
+      if (!filterKey) {
+        console.log('❌ Aborting connection - filterKey is empty');
+        return;
+      }
+      
       const wsUrl = `${currentConfig.wsUrl}/${filterKey}`;
       console.log('Connecting to WebSocket:', wsUrl);
       const ws = new WebSocket(wsUrl);
@@ -100,17 +110,30 @@ const useWebSocket = (filterKey) => {
         setConnectionStatus('disconnected');
         socket.current = null;
 
-        // Attempt to reconnect if not a clean close and we haven't exceeded max attempts
-        if (event.code !== 1000 && reconnectAttempts.current < maxReconnectAttempts) {
+        // Only attempt to reconnect if:
+        // 1. It's not a clean close (code 1000)
+        // 2. We haven't exceeded max attempts
+        // 3. We still have a filterKey (filter not cleared)
+        if (event.code !== 1000 && reconnectAttempts.current < maxReconnectAttempts && filterKey) {
           reconnectAttempts.current++;
           setConnectionStatus('reconnecting');
           console.log(`🔄 Attempting reconnection ${reconnectAttempts.current}/${maxReconnectAttempts}`);
           setTimeout(() => {
             console.log(`Reconnecting... Attempt ${reconnectAttempts.current}`);
-            connect();
+            // Double-check filterKey is still set before reconnecting
+            if (filterKey) {
+              connect();
+            } else {
+              console.log('❌ Aborting reconnection - filterKey cleared during backoff');
+            }
           }, 2000 * reconnectAttempts.current); // Exponential backoff
         } else {
-          console.log('❌ Max reconnection attempts reached or clean close');
+          console.log('❌ Not reconnecting:', {
+            code: event.code,
+            normalClose: event.code === 1000,
+            maxAttemptsReached: reconnectAttempts.current >= maxReconnectAttempts,
+            hasFilterKey: !!filterKey
+          });
         }
       };
 
@@ -125,7 +148,7 @@ const useWebSocket = (filterKey) => {
 
     return () => {
       if (socket.current) {
-        socket.current.close();
+        socket.current.close(1000, 'Component cleanup');
         socket.current = null;
       }
     };
@@ -144,6 +167,18 @@ const useWebSocket = (filterKey) => {
     });
   };
 
+  const disconnect = () => {
+    if (socket.current) {
+      console.log('🔌 Manually disconnecting WebSocket...');
+      // Close with code 1000 (normal closure) to prevent reconnection
+      socket.current.close(1000, 'Manual disconnect');
+      socket.current = null;
+      setConnectionStatus('disconnected');
+      setEvents([]);
+      setEventCount(0);
+    }
+  };
+
   return {
     connectionStatus,
     events,
@@ -151,6 +186,7 @@ const useWebSocket = (filterKey) => {
     isPaused,
     clearEvents,
     togglePause,
+    disconnect,
     socketRef: socket
   };
 };

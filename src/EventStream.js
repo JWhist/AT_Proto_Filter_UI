@@ -7,7 +7,8 @@ const EventStream = ({
   isPaused, 
   onClearEvents, 
   onTogglePause, 
-  connectionStatus 
+  connectionStatus,
+  filterKeyword
 }) => {
   const hasEvents = events.length > 0;
   const isConnected = connectionStatus === 'connected';
@@ -83,6 +84,7 @@ const EventStream = ({
                 key={`${event.timestamp}-${index}`} 
                 event={event} 
                 index={index}
+                filterKeyword={filterKeyword}
               />
             ))}
           </div>

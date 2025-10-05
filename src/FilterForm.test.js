@@ -132,6 +132,6 @@ describe('FilterForm', () => {
 
     expect(screen.getByText(/filter by specific user\/account/i)).toBeInTheDocument();
     expect(screen.getByText(/filter by operation type/i)).toBeInTheDocument();
-    expect(screen.getByText(/note: keyword filtering may not work/i)).toBeInTheDocument();
+    expect(screen.getByText(/use comma-separated keywords/i)).toBeInTheDocument();
   });
 });

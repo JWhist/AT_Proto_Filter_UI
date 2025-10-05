@@ -63,9 +63,9 @@ const FilterForm = ({ onApplyFilter, onClearFilter, initialValues }) => {
             id="keyword"
             value={keyword}
             onChange={(e) => setKeyword(e.target.value)}
-            placeholder="Enter keywords to filter content"
+            placeholder="Enter keywords separated by commas (e.g., hello, world, test)"
           />
-          <small>⚠️ Note: Keyword filtering may not work as expected since firehose events contain only metadata, not full content</small>
+          <small>⚠️ Note: Use comma-separated keywords. Filtering may not work as expected since firehose events contain only metadata, not full content</small>
         </div>
 
         <div className="button-group">
