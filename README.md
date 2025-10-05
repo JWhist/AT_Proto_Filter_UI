@@ -45,7 +45,7 @@ The application will open at `http://localhost:3000`.
 
 1. **Repository DID**: Filter events from a specific user/account
 2. **Path Prefix**: Filter by operation type (e.g., `app.bsky.feed.post` for posts)
-3. **Keyword**: Filter by text content within records
+3. **Keyword**: Filter by text content within records (comma-separated list)
 
 ### 4. Apply Filters
 
