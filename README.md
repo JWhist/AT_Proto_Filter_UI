@@ -15,7 +15,7 @@ A modern React-based Single Page Application (SPA) for real-time filtering and v
 ## Prerequisites
 
 - Node.js 14 or later
-- The AT Protocol backend server running on `localhost:8080`
+- The AT Protocol backend server (for local development: `localhost:8080`)
 
 ## Installation
 
@@ -27,7 +27,23 @@ cd AT_Proto_Filter_UI
 npm install
 ```
 
+## Environment Variables
+
+The application uses environment variables for configuration:
+
+- `REACT_APP_BACKEND_URL`: URL of your AT Protocol backend service
+
+For local development, create a `.env` file:
+
+```bash
+REACT_APP_BACKEND_URL=http://localhost:8080
+```
+
+For production deployment, set this in your hosting platform's environment configuration.
+
 ## Usage
+
+### Local Development
 
 ### 1. Start the Backend Server
 
@@ -40,6 +56,46 @@ npm start
 ```
 
 The application will open at `http://localhost:3000`.
+
+## Deployment
+
+### Netlify Deployment
+
+This project is configured for easy deployment on Netlify:
+
+1. **Push to GitHub**: Ensure your code is pushed to a GitHub repository
+
+2. **Connect to Netlify**:
+   - Go to [Netlify](https://netlify.app)
+   - Click "New site from Git"
+   - Connect your GitHub repository
+   - Select the repository
+
+3. **Configure Build Settings**:
+   - Build command: `npm run build`
+   - Publish directory: `build`
+   - Node version: `18` (configured in `netlify.toml`)
+
+4. **Set Environment Variables**:
+   - Go to Site settings → Environment variables
+   - Add: `REACT_APP_BACKEND_URL` = `https://your-backend-url.com`
+   - Replace with your actual backend service URL
+
+5. **Deploy**: Click "Deploy site"
+
+The `netlify.toml` file includes:
+- Build configuration
+- SPA redirect rules
+- Caching headers for optimal performance
+
+### Other Hosting Platforms
+
+For other platforms (Vercel, Heroku, etc.):
+
+1. Set the `REACT_APP_BACKEND_URL` environment variable
+2. Run `npm run build`
+3. Serve the `build` directory
+4. Ensure SPA routing is configured (redirect all routes to `index.html`)
 
 ### 3. Configure Filters
 
@@ -157,12 +213,12 @@ The app limits event history to 100 events to prevent memory issues. Use the "Cl
 
 ## Customization
 
-### Backend URL
+### Backend URL Configuration
 
-To change the backend URL, update the fetch and WebSocket URLs in:
+The backend URL is configured via the `REACT_APP_BACKEND_URL` environment variable:
 
-- `App.js`: `fetch('http://localhost:8080/api/filters/create'`
-- `useWebSocket.js`: `new WebSocket('ws://localhost:8080/ws/${filterKey}')`
+- **Local Development**: Set in `.env` file or defaults to `http://localhost:8080`
+- **Production**: Set in your hosting platform's environment variables
 
 ### Event Display
 
