@@ -1,18 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-
-// Get backend URL from environment variable
-const backendUrl = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8080';
-
-// Convert HTTP URL to WebSocket URL
-const wsUrl = backendUrl.replace(/^https?:/, backendUrl.startsWith('https:') ? 'wss:' : 'ws:');
-
-// Configuration using environment variables
-const config = {
-  wsUrl: `${wsUrl}/ws`,
-  httpUrl: backendUrl
-};
-
-const currentConfig = config;
+import { config } from './config';
 
 const useWebSocket = (filterKey) => {
   const socket = useRef(null);
@@ -54,7 +41,7 @@ const useWebSocket = (filterKey) => {
         return;
       }
       
-      const wsUrl = `${currentConfig.wsUrl}/${filterKey}`;
+      const wsUrl = `${config.wsUrl}/${filterKey}`;
       console.log('Connecting to WebSocket:', wsUrl);
       const ws = new WebSocket(wsUrl);
       

@@ -28,7 +28,6 @@
       "last 1 safari version"
     ]
   },
-  "proxy": "http://localhost:8080",
   "devDependencies": {
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.0",

@@ -3,10 +3,8 @@ import useWebSocket from './useWebSocket';
 import FilterForm from './FilterForm';
 import EventStream from './EventStream';
 import ConnectionStatus from './ConnectionStatus';
+import { config } from './config';
 import './App.css';
-
-// Get backend URL from environment variable
-const backendUrl = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8080';
 
 function App() {
   const [filterKey, setFilterKey] = useState('');
@@ -61,7 +59,7 @@ function App() {
       console.log('Testing backend connection...');
       
       // Test the status endpoint
-      const statusResponse = await fetch('/api/status');
+      const statusResponse = await fetch(`${config.httpUrl}/api/status`);
       const statusData = await statusResponse.json();
       console.log('Backend status:', statusData);
       
@@ -71,7 +69,7 @@ function App() {
         keyword: 'the'
       };
       
-      const filterResponse = await fetch('/api/filters/create', {
+      const filterResponse = await fetch(`${config.httpUrl}/api/filters/create`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ options: testFilter })
@@ -92,26 +90,13 @@ function App() {
     try {
       console.log('Creating filter with options:', filterOptions);
       
-      // Try the proxied request first, fallback to direct if needed
-      let response;
-      try {
-        response = await fetch('/api/filters/create', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ options: filterOptions }),
-        });
-      } catch (proxyError) {
-        console.log('Proxy request failed, trying direct connection:', proxyError);
-        response = await fetch(`${backendUrl}/api/filters/create`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ options: filterOptions }),
-        });
-      }
+      const response = await fetch(`${config.httpUrl}/api/filters/create`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ options: filterOptions }),
+      });
 
       console.log('Response status:', response.status);
       console.log('Response headers:', Object.fromEntries(response.headers.entries()));
