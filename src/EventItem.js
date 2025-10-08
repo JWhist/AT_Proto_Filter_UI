@@ -146,7 +146,7 @@ const EventItem = ({ event, index, filterKeyword }) => {
   // Create a preview text
   let previewText = '';
   if (record?.text) {
-    previewText = record.text.substring(0, 100) + (record.text.length > 100 ? '...' : '');
+    previewText = record.text; // Show full text, let CSS handle wrapping
   } else if (record?.subject) {
     previewText = `${action} → ${record.subject.uri.split('/').pop()}`;
   } else if (path) {
@@ -166,20 +166,22 @@ const EventItem = ({ event, index, filterKeyword }) => {
         </div>
         
         <div className="event-summary">
-          <span 
-            className="event-type"
-            style={{ backgroundColor: eventTypeColor }}
-          >
-            {action}
-          </span>
+          <div className="event-tags">
+            <span 
+              className="event-type"
+              style={{ backgroundColor: eventTypeColor }}
+            >
+              {action}
+            </span>
+            
+            <span className="event-collection">
+              {collection.replace('app.bsky.', '')}
+            </span>
+          </div>
           
-          <span className="event-collection">
-            {collection.replace('app.bsky.', '')}
-          </span>
-          
-          <span className="event-preview">
+          <div className="event-preview">
             {highlightedPreview}
-          </span>
+          </div>
         </div>
 
         <div className="event-expand">
